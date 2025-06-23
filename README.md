@@ -1,5 +1,5 @@
 # DEV_XMWSDJ04MMC
-把 [小米温湿度计 4](https://home.mi.com/webapp/content/baike/product/index.html?model=miaomiaoce.sensor_ht.t6#/) 添加到 HomeSpan 的实现。
+把 [小米温湿度计 4](https://home.mi.com/webapp/content/baike/product/index.html?model=miaomiaoce.sensor_ht.t6#/) 添加到 HomeSpan，在 HomeKit 上显示温湿度的实现。
 
 ![小米温湿度计 4](images/XMWSDJ04MMC.png)
 
