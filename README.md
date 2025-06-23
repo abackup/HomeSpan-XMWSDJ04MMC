@@ -15,7 +15,7 @@
 #define BLE_DEVICE_ADDRESS "**:**:**:**:**:**"
 ```
 
-在 setup() 函数中调用 `DEV_xiaomiTemp()`、`DEV_xiaomiHum()` 实现温湿度计功能（电池电量功能还在修改中）。
+在 setup() 函数中调用 `DEV_xiaomiTemp()`、`DEV_xiaomiHum()` 实现温湿度计功能（电池电量功能还在修改中），举例如下：
 
 ```C++
 #include "HomeSpan.h"
