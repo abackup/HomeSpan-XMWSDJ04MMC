@@ -26,6 +26,7 @@ void setup()
     Serial.begin(115200);
 
     homeSpan.setWifiCredentials("your WIFI", "WIFI password");
+
     BLEDevice::init("");
 
     homeSpan.begin(Category::Bridges, "HomeKit Bridge", "Bridge", "ESP32-C3 mini"); 
