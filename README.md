@@ -1,7 +1,9 @@
 # DEV_XMWSDJ04MMC
 把 [小米温湿度计 4](https://home.mi.com/webapp/content/baike/product/index.html?model=miaomiaoce.sensor_ht.t6#/) 添加到 HomeSpan，在 HomeKit 上显示温湿度的实现。
 
-![小米温湿度计 4](images/XMWSDJ04MMC.png)
+<p align="center">
+  <img src="images/XMWSDJ04MMC.png" alt="小米温湿度计 4" width="480"/>
+</p>
 
 下载 `DEV_XMWSDJ04MMC.h` 放在 HomeSpan 库文件的 `/ HomeSpan/src/` 文件夹下，在 HomeSpan 的代码添加如下头文件：
 
