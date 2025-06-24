@@ -11,7 +11,7 @@
 #include "DEV_XMWSDJ04MMC.h"
 ```
 
-修改 DEV_XMWSDJ04MMC.h 中的更新时间参数（默认为7200000,2小时更新一次）和蓝牙地址信息。
+修改 DEV_XMWSDJ04MMC.h 中的更新时间参数（默认为7200000毫秒,即2小时更新一次）和蓝牙地址信息。
 
 ```C++
 #define XIAOMI_LOOP_TIME 7200000  // 温湿度计2小时更新一次
