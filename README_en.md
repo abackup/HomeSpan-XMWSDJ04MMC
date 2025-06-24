@@ -11,7 +11,7 @@ Download `DEV_XMWSDJ04MMC.h` and put it in the `/ HomeSpan/src/` folder of the H
 #include "DEV_XMWSDJ04MMC.h"
 ```
 
-Modify the update time parameter in DEV_XMWSDJ04MMC.h (the default is 7200000 milliseconds, that is, update once every 2 hours) and Bluetooth address information.
+Modify the update time parameter in `DEV_XMWSDJ04MMC.h` (the default is 7200000 milliseconds, that is, update once every 2 hours) and Bluetooth address information.
 
 ```C++
 #define XIAOMI_LOOP_TIME 7200000 // Thermohygrometer updates every 2 hours
