@@ -1,4 +1,4 @@
-[README](./README_en.md)  |[中文文档](./README.md)
+[README](./README_en.md) | [中文文档](./README.md)  
 
 ## DEV_XMWSDJ04MMC
 
