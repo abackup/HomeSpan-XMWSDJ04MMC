@@ -24,6 +24,14 @@ BLEState bleState = BLE_DISCONNECTED;
 
 bool connectBLE()
 {
+    // 清理旧连接
+  if (pClient) {
+    if (pClient->isConnected()) {
+      pClient->disconnect();
+    }
+    delete pClient;
+    pClient = nullptr;
+  }
   pClient = BLEDevice::createClient();
   if (!pClient->connect(BLEAddress(BLE_DEVICE_ADDRESS)))
     return false;
