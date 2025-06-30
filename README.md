@@ -1,6 +1,6 @@
 [README](./README_en.md) | [中文文档](./README.md)  
 
-## DEV_XMWSDJ04MMC
+## DEV_XMWSDJ04MMC 可能有错，还在优化中。。。
 
 把 [小米温湿度计 4](https://home.mi.com/webapp/content/baike/product/index.html?model=miaomiaoce.sensor_ht.t6#/) 添加到 HomeSpan，在 HomeKit 上显示温湿度的实现。
 
