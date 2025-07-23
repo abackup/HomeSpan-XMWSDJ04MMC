@@ -1,6 +1,6 @@
 [README](./README_en.md) | [中文文档](./README.md)  
 
-## DEV_XMWSDJ04MMC 可能有错，还在优化中。。。
+## DEV_XMWSDJ04MMC
 
 把 [小米温湿度计 4](https://home.mi.com/webapp/content/baike/product/index.html?model=miaomiaoce.sensor_ht.t6#/) 添加到 HomeSpan，在 HomeKit 上显示温湿度的实现。
 
@@ -17,12 +17,12 @@
 * 修改 `DEV_XMWSDJ04MMC.h` 中的更新时间参数（默认为7200000毫秒,即2小时更新一次）和蓝牙地址信息。
 
 ```C++
-#define XIAOMI_LOOP_TIME 7200000  // 温湿度计2小时更新一次
+#define LOOPTIME 7200000  // 温湿度计2小时更新一次
 
 #define BLE_DEVICE_ADDRESS "**:**:**:**:**:**"
 ```
 
-* 在 `setup()` 函数中调用 `DEV_xiaomiTemp()`、`DEV_xiaomiHum()` 实现温湿度计功能（电池电量功能还在修改中），**HomeSpan 上电后需要按下小米温湿度计 4 的按钮以配对**。举例如下：
+* 在 `setup()` 函数中调用 `DEV_xiaomiTemp()`、`DEV_xiaomiHum()`、`new DEV_XiaomiBattery()`实现温湿度计功能和电池电量功能，**HomeSpan 上电后需要按下小米温湿度计 4 的按钮以配对**。举例如下：
 
 ```C++
 #include "HomeSpan.h"
@@ -48,6 +48,13 @@ void setup()
 
     new DEV_XiaomiTemp();
     new DEV_XiaomiHum();
+    new DEV_XiaomiBattery();
+
+//
+//    new SpanAccessory();
+//    new Service::AccessoryInformation();
+//    new Characteristic::Identify();
+//    ....
 
   }
 
