@@ -4,15 +4,17 @@
 #include <BLEUtils.h>
 #include <BLEClient.h>
 
-#define XIAOMI_LOOP_TIME 7200000  // 温湿度计2小时更新一次
+#define LOOPTIME 7200000 // 温湿度计2小时更新一次
 
 #define BLE_DEVICE_ADDRESS "**:**:**:**:**:**"
 #define SERVICE_UUID "ebe0ccb0-7a0a-4b0c-8a1a-6ff2997da3a6"
 #define CHARACTERISTIC_UUID "ebe0ccc1-7a0a-4b0c-8a1a-6ff2997da3a6"
 
-float xiaomiTemp = 0, xiaomiHum = 0, xiaomiVolt = 3;
+float xiaomiTemp = 0, xiaomiHum = 0, xiaomiVolt = 0;
 BLEClient *pClient = nullptr;
 BLERemoteCharacteristic *pRemoteCharacteristic = nullptr;
+
+int xiaomiLoopTime = 3000;
 
 enum BLEState
 {
@@ -24,9 +26,11 @@ BLEState bleState = BLE_DISCONNECTED;
 
 bool connectBLE()
 {
-    // 清理旧连接
-  if (pClient) {
-    if (pClient->isConnected()) {
+  // 清理旧连接
+  if (pClient)
+  {
+    if (pClient->isConnected())
+    {
       pClient->disconnect();
     }
     delete pClient;
@@ -73,12 +77,12 @@ int voltageToPercentage(float voltage)
   return (int)((voltage - 2.5) * 200); // 线性插值
 }
 
-struct DEV_xiaomiTemp : Service::TemperatureSensor
+struct DEV_XiaomiTemp : Service::TemperatureSensor
 {
   SpanCharacteristic *temp;
   SpanCharacteristic *statusActive;
 
-  DEV_xiaomiTemp() : Service::TemperatureSensor()
+  DEV_XiaomiTemp() : Service::TemperatureSensor()
   {
     readSensor(xiaomiTemp, xiaomiHum, xiaomiVolt);
     temp = new Characteristic::CurrentTemperature(xiaomiTemp, true);
@@ -87,54 +91,61 @@ struct DEV_xiaomiTemp : Service::TemperatureSensor
   }
   void loop() override
   {
-
-    if (temp->timeVal() > XIAOMI_LOOP_TIME)
+    if (bleState == BLE_CONNECTED)
     {
-      switch (bleState)
+      xiaomiLoopTime = LOOPTIME;
+    }else{
+      xiaomiLoopTime = 3000;
+    }
+
+      if (temp->timeVal() > xiaomiLoopTime)
       {
-      case BLE_DISCONNECTED:
-        bleState = BLE_CONNECTING;
-        break;
+        switch (bleState)
+        {
+        case BLE_DISCONNECTED:
+          bleState = BLE_CONNECTING;
+          break;
 
-      case BLE_CONNECTING:
-        if (connectBLE())
-        {
-          bleState = BLE_CONNECTED;
-        }
-        else
-        {
-          // 连接失败，稍后重试
-          static unsigned long lastRetry = 0;
-          if (millis() - lastRetry > 10000)
+        case BLE_CONNECTING:
+          if (connectBLE())
           {
-            lastRetry = millis();
-            bleState = BLE_DISCONNECTED;
+            bleState = BLE_CONNECTED;
           }
-        }
-        break;
+          else
+          {
+            // 连接失败，稍后重试
+            static unsigned long lastRetry = 0;
+            if (millis() - lastRetry > 10000)
+            {
+              lastRetry = millis();
+              bleState = BLE_DISCONNECTED;
+            }
+          }
+          break;
 
-      case BLE_CONNECTED:
-        if (!pClient->isConnected())
-        {
-          bleState = BLE_DISCONNECTED;
+        case BLE_CONNECTED:
+          if (!pClient->isConnected())
+          {
+            bleState = BLE_DISCONNECTED;
+            break;
+          }
+
+          readSensor(xiaomiTemp, xiaomiHum, xiaomiVolt);
+          Serial.printf("Xiaomi Temp: %.1f, Hum: %.1f, Volt: %.3f\n", xiaomiTemp, xiaomiHum, xiaomiVolt);
+
           break;
         }
-
-        readSensor(xiaomiTemp, xiaomiHum, xiaomiVolt);
-
-        break;
+        temp->setVal(xiaomiTemp);
       }
-      temp->setVal(xiaomiTemp);
-    }
   }
 };
 
-struct DEV_xiaomiHum : Service::HumiditySensor
+struct DEV_XiaomiHum : Service::HumiditySensor
 {
   SpanCharacteristic *hum;
   SpanCharacteristic *statusActive;
 
-  DEV_xiaomiHum() : Service::HumiditySensor()
+  DEV_XiaomiHum() : Service::HumiditySensor()
   {
 
     hum = new Characteristic::CurrentRelativeHumidity(xiaomiHum, true);
@@ -145,42 +156,44 @@ struct DEV_xiaomiHum : Service::HumiditySensor
   void loop() override
   {
 
-    if (hum->timeVal() > XIAOMI_LOOP_TIME + 1000) // 6秒后更新湿度
+    if (hum->timeVal() > xiaomiLoopTime + 1000) // 1秒后更新湿度
     {
       hum->setVal(xiaomiHum);
     }
   }
 };
 
-// struct DEV_XiaomiBattery : Service::BatteryService
-// {
-//   SpanCharacteristic *batteryLevel;
-//   SpanCharacteristic *chargingState;
-//   SpanCharacteristic *statusLowBattery;
+struct DEV_XiaomiBattery : Service::BatteryService
+{
+  SpanCharacteristic *batteryLevel;
+  SpanCharacteristic *chargingState;
+  SpanCharacteristic *statusLowBattery;
 
-//   DEV_XiaomiBattery() : Service::BatteryService()
-//   {
+  DEV_XiaomiBattery() : Service::BatteryService()
+  {
+    new Characteristic::ConfiguredName("室内温湿度电量");
+    batteryLevel = new Characteristic::BatteryLevel(100, true);
+    chargingState = new Characteristic::ChargingState(2, true);
+    statusLowBattery = new Characteristic::StatusLowBattery(0, true); // 0表示电池正常，1表示电池低电量
+    batteryLevel->setRange(0, 100);
+  }
 
-//     batteryLevel = new Characteristic::BatteryLevel(voltageToPercentage(xiaomiVolt), true);
-//     chargingState = new Characteristic::ChargingState(1, true);
-//     statusLowBattery = new Characteristic::StatusLowBattery(0, true); // 0表示电池正常，1表示电池低电量
-//     batteryLevel->setRange(0, 100);
-//   }
+  void loop() override
+  {
 
-//   void loop() override
-//   {
+    if (batteryLevel->timeVal() > xiaomiLoopTime + 1000) // 6秒后更新湿度
+    {
+      
+      batteryLevel->setVal(voltageToPercentage(xiaomiVolt));
 
-//     if (batteryLevel->timeVal() > XIAOMI_LOOP_TIME + 1000) // 6秒后更新湿度
-//     {
-//       batteryLevel->setVal(voltageToPercentage(xiaomiVolt));
-//       if (voltageToPercentage(xiaomiVolt) < 20) // 电池电量低于20%
-//       {
-//         statusLowBattery->setVal(1); // 1表示电池低电量
-//       }
-//       else
-//       {
-//         statusLowBattery->setVal(0); // 0表示电池正常
-//       }
-//     }
-//   }
-// };
+      if (voltageToPercentage(xiaomiVolt) < 20) // 电池电量低于20%
+      {
+        statusLowBattery->setVal(1); // 1表示电池低电量
+      }else
+      {
+        statusLowBattery->setVal(0); // 0表示电池正常
+      }
+      
+    }
+  }
+};
