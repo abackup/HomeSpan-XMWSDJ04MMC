@@ -21,7 +21,7 @@ Add [Xiaomi ThermoHygrometer 4](https://home.mi.com/webapp/content/baike/product
 #define BLE_DEVICE_ADDRESS "**:**:**:**:**:**"
 ```
 
-* In `the setup()` function, call `DEV_xiaomiTemp()`、`DEV_xiaomiHum()`and `new DEV_XiaomiBattery()` to implement the thermohygrometer and the battery power function. **After HomeSpan is powered on, you need to press the button of Xiaomi Thermohygrometer 4 to pair**. Examples are as follows:  
+* In `the setup()` function, call `DEV_xiaomiTemp()`、`DEV_xiaomiHum()`and `new DEV_XiaomiBattery()` to implement the thermohygrometer and the battery level function. **After HomeSpan is powered on, you need to press the button of Xiaomi Thermohygrometer 4 to pair**. Examples are as follows:  
 
 ```C++
 #include "HomeSpan.h"
